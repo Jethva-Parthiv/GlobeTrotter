@@ -1,14 +1,10 @@
+import { forwardRef } from 'react'
 import { cn } from '@/utils/cn'
 
-export default function Input({
-  id,
-  label,
-  error,
-  hint,
-  className,
-  type = 'text',
-  ...props
-}) {
+const Input = forwardRef(function Input(
+  { id, label, error, hint, className, type = 'text', ...props },
+  ref,
+) {
   return (
     <div className="flex w-full flex-col gap-1.5">
       {label ? (
@@ -18,6 +14,7 @@ export default function Input({
       ) : null}
       <input
         id={id}
+        ref={ref}
         type={type}
         className={cn(
           'h-10 w-full rounded-md border border-line bg-paper px-3 text-sm text-ink',
@@ -41,4 +38,6 @@ export default function Input({
       ) : null}
     </div>
   )
-}
+})
+
+export default Input
