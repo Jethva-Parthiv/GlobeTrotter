@@ -205,8 +205,9 @@ def copy_trip(
         start_date=original_trip.start_date,
         end_date=original_trip.end_date,
         cover_photo_url=original_trip.cover_photo_url,
-        is_public=False,
+        is_public=original_trip.is_public,
     )
+
     db.add(new_trip)
     db.flush()
 

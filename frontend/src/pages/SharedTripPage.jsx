@@ -1,6 +1,7 @@
+import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { Copy, Share2 } from 'lucide-react'
+import { Check, Copy, Link2, Share2 } from 'lucide-react'
 import { publicApi } from '@/api/publicApi'
 import { tripApi } from '@/api/tripApi'
 import Button from '@/components/common/Button'
@@ -15,13 +16,15 @@ import { useToast } from '@/hooks/useToast'
 import { formatCurrency } from '@/utils/formatCurrency'
 import { formatDateRange } from '@/utils/dates'
 import { getApiErrorMessage } from '@/utils/apiError'
-import { shareOrCopy } from '@/utils/share'
+import { copyToClipboard, shareOrCopy } from '@/utils/share'
 
 export default function SharedTripPage() {
   const { tripId } = useParams()
   const { isAuthenticated } = useAuth()
   const toast = useToast()
   const navigate = useNavigate()
+  const [copiedLink, setCopiedLink] = useState(false)
+
   const { data: trip, isLoading, isError, error, refetch } = useQuery({
     queryKey: QUERY_KEYS.publicTrip(tripId),
     queryFn: () => publicApi.getTrip(tripId),
@@ -42,10 +45,27 @@ export default function SharedTripPage() {
   const stops = [...(trip.stops || [])].sort((a, b) => a.order - b.order)
   const route = stops.map((s) => s.city_name).join(' → ')
 
+  const onCopyLink = async () => {
+    const success = await copyToClipboard(window.location.href)
+    if (success) {
+      setCopiedLink(true)
+      toast.success('Link copied to clipboard!')
+      setTimeout(() => setCopiedLink(false), 2500)
+    } else {
+      toast.error('Failed to copy link')
+    }
+  }
+
   const onShare = async () => {
     try {
       const result = await shareOrCopy(window.location.href, trip.name)
-      toast.success(result === 'copied' ? 'Link copied' : 'Shared')
+      if (result === 'copied') {
+        setCopiedLink(true)
+        toast.success('Link copied to clipboard!')
+        setTimeout(() => setCopiedLink(false), 2500)
+      } else {
+        toast.success('Shared successfully')
+      }
     } catch {
       toast.error('Sharing was cancelled')
     }
@@ -67,6 +87,10 @@ export default function SharedTripPage() {
       </div>
       <div className="mx-auto max-w-3xl px-4 py-10">
         <div className="flex flex-wrap gap-3">
+          <Button variant="secondary" onClick={onCopyLink}>
+            {copiedLink ? <Check className="h-4 w-4 text-accent" /> : <Link2 className="h-4 w-4" />}
+            {copiedLink ? 'Link copied' : 'Copy link'}
+          </Button>
           <Button variant="secondary" onClick={onShare}>
             <Share2 className="h-4 w-4" />
             Share
@@ -82,9 +106,10 @@ export default function SharedTripPage() {
             disabled={copyMutation.isPending}
           >
             <Copy className="h-4 w-4" />
-            Copy trip
+            {copyMutation.isPending ? 'Copying…' : 'Duplicate trip'}
           </Button>
         </div>
+
         {trip.description ? <p className="mt-8 text-base leading-7 text-ink-soft">{trip.description}</p> : null}
         <p className="mt-4 text-lg">{formatCurrency(trip.total_estimated_cost)}</p>
         {!stops.length ? (
