@@ -1,5 +1,16 @@
 export const QUERY_KEYS = {
   me: ['me'],
-  trips: ['trips'],
-  cities: ['cities'],
+  dashboard: ['dashboard'],
+  trips: (sort) => ['trips', sort],
+  trip: (id) => ['trip', id],
+  cities: (params) => ['cities', params],
+  city: (id) => ['city', id],
+  cityActivities: (id, params) => ['city-activities', id, params],
+  activity: (id) => ['activity', id],
+  budget: (id) => ['budget', id],
+  dailyBudget: (id) => ['budget-daily', id],
+  publicTrips: (params) => ['public-trips', params],
+  publicTrip: (id) => ['public-trip', id],
+  adminAnalytics: ['admin-analytics'],
+  adminUsers: (params) => ['admin-users', params],
 }
