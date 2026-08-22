@@ -1,10 +1,5 @@
-import PlaceholderPage from '@/components/common/PlaceholderPage'
+import TripFormPage from './TripFormPage'
 
 export default function NewTripPage() {
-  return (
-    <PlaceholderPage
-      title="New trip"
-      description="The create-trip form will collect name, dates, and cover details according to the API contract."
-    />
-  )
+  return <TripFormPage mode="create" />
 }
