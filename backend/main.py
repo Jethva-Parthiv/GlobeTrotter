@@ -1,5 +1,8 @@
+import os
+from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 
 from database import Base, engine
@@ -14,6 +17,7 @@ from routers import (
     stop_activities,
     stops,
     trips,
+    upload,
     users,
 )
 from seed import seed_database
@@ -24,6 +28,8 @@ async def lifespan(app: FastAPI):
     # Ensure tables exist and seed default catalogue data
     Base.metadata.create_all(bind=engine)
     seed_database()
+    os.makedirs("uploads/covers", exist_ok=True)
+    os.makedirs("uploads/avatars", exist_ok=True)
     yield
 
 
@@ -49,6 +55,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Ensure uploads directory exists and mount static files
+os.makedirs("uploads", exist_ok=True)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
 # Include all modular routers
 app.include_router(auth.router)
 app.include_router(users.router)
@@ -61,6 +71,8 @@ app.include_router(budget.router)
 app.include_router(dashboard.router)
 app.include_router(public.router)
 app.include_router(admin.router)
+app.include_router(upload.router)
+
 
 
 @app.get("/")

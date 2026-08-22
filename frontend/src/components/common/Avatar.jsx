@@ -1,4 +1,5 @@
 import { cn } from '@/utils/cn'
+import { getImageUrl } from '@/utils/imageUrl'
 
 export default function Avatar({ src, alt = '', name = '', size = 'md', className }) {
   const initials = name
@@ -14,15 +15,18 @@ export default function Avatar({ src, alt = '', name = '', size = 'md', classNam
     lg: 'h-12 w-12 text-base',
   }
 
-  if (src) {
+  const resolvedSrc = getImageUrl(src)
+
+  if (resolvedSrc) {
     return (
       <img
-        src={src}
+        src={resolvedSrc}
         alt={alt || name}
         className={cn('rounded-full object-cover', sizes[size], className)}
       />
     )
   }
+
 
   return (
     <div

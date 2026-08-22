@@ -6,6 +6,7 @@ import { userApi } from '@/api/userApi'
 import Avatar from '@/components/common/Avatar'
 import Button from '@/components/common/Button'
 import Card from '@/components/common/Card'
+import ImageUpload from '@/components/common/ImageUpload'
 import Input from '@/components/common/Input'
 import Select from '@/components/common/Select'
 import { QUERY_KEYS } from '@/constants/queryKeys'
@@ -23,8 +24,12 @@ export default function ProfilePage() {
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm({ resolver: zodResolver(profileSchema) })
+
+  const photoUrl = watch('photo_url')
 
   useEffect(() => {
     if (user) {
@@ -58,7 +63,7 @@ export default function ProfilePage() {
       <h1 className="font-display text-3xl">Profile</h1>
       <Card className="mt-6">
         <div className="mb-6 flex items-center gap-3">
-          <Avatar src={user?.photo_url} name={user?.name} size="lg" />
+          <Avatar src={photoUrl || user?.photo_url} name={user?.name} size="lg" />
           <div>
             <p className="font-medium">{user?.name}</p>
             <p className="text-sm text-muted">{user?.email}</p>
@@ -67,7 +72,15 @@ export default function ProfilePage() {
         <form className="flex flex-col gap-4" onSubmit={handleSubmit((v) => mutation.mutateAsync(v))}>
           <Input id="name" label="Name" error={errors.name?.message} {...register('name')} />
           <Input id="email" label="Email" type="email" error={errors.email?.message} {...register('email')} />
-          <Input id="photo_url" label="Photo URL" error={errors.photo_url?.message} {...register('photo_url')} />
+          <ImageUpload
+            label="Profile photo"
+            hint="Upload your avatar (PNG, JPG, WEBP, or GIF up to 10MB)"
+            folder="avatars"
+            value={photoUrl}
+            onChange={(newUrl) => setValue('photo_url', newUrl, { shouldValidate: true, shouldDirty: true })}
+            error={errors.photo_url?.message}
+          />
+
           <Select id="language_preference" label="Language preference" {...register('language_preference')}>
             <option value="en">English</option>
             <option value="es">Spanish</option>

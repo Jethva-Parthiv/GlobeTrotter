@@ -18,6 +18,7 @@ export const forgotPasswordSchema = z.object({
 export const profileSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   email: z.string().email('Enter a valid email'),
-  photo_url: z.union([z.literal(''), z.string().url('Enter a valid URL')]).optional(),
+  photo_url: z.string().nullable().optional(),
   language_preference: z.string().min(1),
 })
+

@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { cn } from '@/utils/cn'
+import { getImageUrl } from '@/utils/imageUrl'
 
 export default function CoverImage({ src, alt = '', className }) {
   const [failed, setFailed] = useState(false)
-  const showFallback = !src || failed
+  const resolvedSrc = getImageUrl(src)
+  const showFallback = !resolvedSrc || failed
 
   if (showFallback) {
     return (
@@ -17,10 +19,11 @@ export default function CoverImage({ src, alt = '', className }) {
 
   return (
     <img
-      src={src}
+      src={resolvedSrc}
       alt={alt}
       className={cn('object-cover', className)}
       onError={() => setFailed(true)}
     />
   )
 }
+

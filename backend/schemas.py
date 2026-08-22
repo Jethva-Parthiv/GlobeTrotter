@@ -303,3 +303,13 @@ class AnalyticsOut(BaseModel):
     top_activities: List[ActivityPopularity]
     trips_created_last_7_days: int
     avg_stops_per_trip: float
+
+
+# ==========================================
+# Upload Schemas
+# ==========================================
+class UploadResponse(BaseModel):
+    url: str
+    filename: str
+    content_type: str
+

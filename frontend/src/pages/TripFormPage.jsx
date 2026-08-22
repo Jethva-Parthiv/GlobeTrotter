@@ -7,6 +7,7 @@ import { tripApi } from '@/api/tripApi'
 import Button from '@/components/common/Button'
 import Card from '@/components/common/Card'
 import ErrorState from '@/components/common/ErrorState'
+import ImageUpload from '@/components/common/ImageUpload'
 import Input from '@/components/common/Input'
 import Skeleton from '@/components/common/Skeleton'
 import Textarea from '@/components/common/Textarea'
@@ -34,6 +35,8 @@ export default function TripFormPage({ mode }) {
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(tripSchema),
@@ -46,6 +49,8 @@ export default function TripFormPage({ mode }) {
       is_public: false,
     },
   })
+
+  const coverPhotoUrl = watch('cover_photo_url')
 
   useEffect(() => {
     if (tripQuery.data) {
@@ -102,17 +107,21 @@ export default function TripFormPage({ mode }) {
             <Input id="start_date" type="date" label="Start date" error={errors.start_date?.message} {...register('start_date')} />
             <Input id="end_date" type="date" label="End date" error={errors.end_date?.message} {...register('end_date')} />
           </div>
-          <Input
-            id="cover_photo_url"
-            label="Cover photo URL"
-            hint="A public image URL"
+
+          <ImageUpload
+            label="Cover photo"
+            hint="Upload a scenic cover photo (PNG, JPG, WEBP, or GIF up to 10MB)"
+            folder="covers"
+            value={coverPhotoUrl}
+            onChange={(newUrl) => setValue('cover_photo_url', newUrl, { shouldValidate: true, shouldDirty: true })}
             error={errors.cover_photo_url?.message}
-            {...register('cover_photo_url')}
           />
+
           <label className="flex items-center gap-2 text-sm text-ink-soft">
             <input type="checkbox" className="h-4 w-4" {...register('is_public')} />
             Make this itinerary public
           </label>
+
           {apiError ? <p className="text-sm text-danger">{apiError}</p> : null}
           <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
             <Button variant="secondary" type="button" onClick={() => navigate(-1)}>
