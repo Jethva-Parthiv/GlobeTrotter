@@ -39,7 +39,11 @@ client.interceptors.request.use((config) => {
 client.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const status = error.response?.status
+    const url = error.config?.url || ''
+    const isAuthAttempt = url.includes('/auth/login') || url.includes('/auth/signup')
+
+    if (status === 401 && !isAuthAttempt) {
       clearAccessToken()
       window.dispatchEvent(new CustomEvent('globetrotter:unauthorized'))
     }
