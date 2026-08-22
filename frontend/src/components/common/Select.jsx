@@ -1,14 +1,10 @@
+import { forwardRef } from 'react'
 import { cn } from '@/utils/cn'
 
-export default function Select({
-  id,
-  label,
-  error,
-  hint,
-  className,
-  children,
-  ...props
-}) {
+const Select = forwardRef(function Select(
+  { id, label, error, hint, className, children, ...props },
+  ref,
+) {
   return (
     <div className="flex w-full flex-col gap-1.5">
       {label ? (
@@ -18,6 +14,7 @@ export default function Select({
       ) : null}
       <select
         id={id}
+        ref={ref}
         className={cn(
           'h-10 w-full rounded-md border border-line bg-paper px-3 text-sm text-ink',
           'outline-none transition-shadow focus:border-ink/30 focus:ring-2 focus:ring-accent/20',
@@ -25,20 +22,13 @@ export default function Select({
           className,
         )}
         aria-invalid={Boolean(error)}
-        aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
         {...props}
       >
         {children}
       </select>
-      {error ? (
-        <p id={`${id}-error`} className="text-sm text-danger">
-          {error}
-        </p>
-      ) : hint ? (
-        <p id={`${id}-hint`} className="text-sm text-muted">
-          {hint}
-        </p>
-      ) : null}
+      {error ? <p className="text-sm text-danger">{error}</p> : hint ? <p className="text-sm text-muted">{hint}</p> : null}
     </div>
   )
-}
+})
+
+export default Select
